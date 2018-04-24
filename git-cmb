@@ -1,0 +1,18 @@
+#!/bin/bash
+
+main_branch_to_search_from="${1:-$(git symbolic-ref --short HEAD)}"
+branches_to_delete=$(git branch --merged "$main_branch_to_search_from" | grep -v "\^* $main_branch_to_search_from\$")
+
+if [ "$branches_to_delete" = "" ]; then
+    echo "No branches which are merged into \"$main_branch_to_search_from\" were found."
+    exit 0
+fi
+
+echo "$branches_to_delete"
+echo "Those branches are merged into \"$main_branch_to_search_from\" and are no longer used."
+echo "Are you sure you want to delete them? [y]"
+read confirm_deleting_branches
+
+if [ "${confirm_deleting_branches:0:1}" = "y" ]; then
+    echo "$branches_to_delete" | xargs git branch -d
+fi

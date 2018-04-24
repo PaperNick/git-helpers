@@ -1,0 +1,11 @@
+#!/bin/bash
+
+commit_hash="$(git rev-parse --short "${1:-HEAD~1}")"
+echo "Are you sure you want to uncommit the changes back to \"$commit_hash\"?"
+echo "Press [n] to cancel."
+
+read confirm_undo
+if [ "$confirm_undo" = "" ]; then
+    # Remove commits but keep the changes in those commits
+    git reset --mixed "$commit_hash" && git status
+fi

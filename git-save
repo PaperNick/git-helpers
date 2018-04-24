@@ -1,0 +1,9 @@
+#!/bin/bash
+
+if [ "$(git status)" = "" ]; then
+    echo 'There were not any modified files. No changes have been made.'
+    exit 0
+fi
+
+current_datetime=$(date '+%Y-%m-%d %H:%M:%S')
+git add --all && git commit -m "Stash $current_datetime" --no-verify

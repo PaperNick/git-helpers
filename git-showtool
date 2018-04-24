@@ -1,0 +1,5 @@
+#!/bin/bash
+
+commit_hash="${1:-HEAD}"
+
+git difftool -d $commit_hash~1 $commit_hash

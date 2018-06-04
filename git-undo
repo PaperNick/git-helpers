@@ -1,11 +1,13 @@
 #!/bin/bash
 
 commit_hash="$(git rev-parse --short "${1:-HEAD~1}")"
+echo "Files that are about to be uncommitted:"
+git show "$commit_hash..HEAD" --name-status --oneline
 echo "Are you sure you want to uncommit the changes back to \"$commit_hash\"?"
 echo "Press [q] to cancel."
 
 read confirm_undo
 if [ "$confirm_undo" = "" ]; then
     # Remove commits but keep the changes in those commits
-    git reset --mixed "$commit_hash" && git status
+    git reset --mixed "$commit_hash"
 fi

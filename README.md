@@ -61,16 +61,16 @@ You can easily undo commits, but keep the changes introduced into them.
 Uncommit the last commit (press Enter once again for confirmation):
 ```
 papernick@PaperNick-S1:~/Adminer-Material-Theme (feature/awesome)$ git undo
-This command will uncommit the changes back to "23f0ace54ed6fa577e2d51e9c3307fa008718f83"?
+Files that are about to be uncommitted:
+aea42b1 removed footer border
+M       adminer.css
+M       src/adminer.scss
+Are you sure you want to uncommit the changes back to "23f0ace54ed6fa577e2d51e9c3307fa008718f83"?
 Press [q] to cancel.
 
 Unstaged changes after reset:
-M	README.md
 M	adminer.css
 M	src/adminer.scss
- M README.md
- M adminer.css
- M src/adminer.scss
 ```
 Uncommit several commits back, or provide commit hash (press Enter once again for confirmation):
 ```

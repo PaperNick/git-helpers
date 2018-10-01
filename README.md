@@ -27,6 +27,9 @@ Deleted branch fix/quick-patch (was 23f0ace).
 ```
 This command is useful when you have incorporated a change in master and you no longer need the feature branch.
 
+**Bonus:**
+You can specify which branches should be skipped when running the command. You only need to modify the `BRANCHES_TO_SKIP` array in the script.
+
 ### Stash changes in the current branch
 I make a lot of commits all the time. I use them for everything, even as a replacement for stashes.
 

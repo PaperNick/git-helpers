@@ -1,7 +1,25 @@
 #!/bin/bash
 
-main_branch_to_search_from="${1:-$(git symbolic-ref --short HEAD)}"
-branches_to_delete=$(git branch --merged "$main_branch_to_search_from" | grep -v "\*" | grep -v "\b$main_branch_to_search_from\$")
+function remove_branch() {
+    # Removes a string which is contained in another string
+    # Note:
+    # - echo is used to return the function result
+    # - to assign the return value to a variable, wrap this function in command substitution - $()
+    local all_branches="$1"
+    local branch_to_remove="$2"
+    echo "$(echo "$all_branches" | grep -v "\b$branch_to_remove\$")"
+}
+
+current_branch="$(git symbolic-ref --short HEAD)"
+main_branch_to_search_from="${1:-$current_branch}"
+branches_to_delete="$(git branch --merged "$main_branch_to_search_from" | grep -v "\*")"
+
+# If a branch in BRANCHES_TO_SKIP contains spaces, quote the branch -> (master, "branch with space" other)
+BRANCHES_TO_SKIP=(master develop)
+for branch_to_skip in "${BRANCHES_TO_SKIP[@]}"; do
+    branches_to_delete="$(remove_branch "$branches_to_delete" "$branch_to_skip")"
+done
+
 
 if [ "$branches_to_delete" = "" ]; then
     echo "No branches which are merged into \"$main_branch_to_search_from\" were found."

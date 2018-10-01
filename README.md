@@ -98,3 +98,37 @@ papernick@PaperNick-S1:~/Adminer-Material-Theme (master)$ git showtool
 ```
 git config --global diff.tool meld
 ```
+
+### Reset changes safely
+When I start working on a feature, I usually implement it in the most straightforward way, just to make it work.
+After that, I iterate over the initial solution until it's polished and it looks clean.
+
+This usually works fine, but there are times that things go completely wrong, and only a fresh start with `git reset --hard HEAD` can clear things up.
+This command basically resets all your uncommitted changes, as if they never existed. But after you've executed this command, you remember that there was a hidden gem among the waste. Well, too bad, it's gone forever.
+
+With `git wipe`, you can safely clear you current changes without having any second thoughts. Before deleting the changes, `git wipe` actually commits them, prints the commit hash into the console, and then removes them. The cool thing about this, is that if you want to restore them, you only need to revive the commit by its hash that was printed earlier. A simple `git cherry-pick hash-of-deleted-changes` should do the work.
+
+**Example usage:**
+```
+papernick@PaperNick-S1:~/Adminer-Material-Theme (master)$ git status
+ M Gruntfile.js
+papernick@PaperNick-S1:~/Adminer-Material-Theme (master)$ git wipe
+Wiped content commit hash was: 7f5aa79
+HEAD is now at b15c27c Updated README.md by listing the differences from the original theme
+papernick@PaperNick-S1:~/Adminer-Material-Theme (master)$ echo 'Oh no! My precious grunt task!'
+Oh no! My precious grunt task!
+papernick@PaperNick-S1:~/Adminer-Material-Theme (master)$ git cherry-pick 7f5aa79
+[master dec7ca2] Wipe checkpoint
+ Date: Mon Oct 1 23:17:44 2018 +0300
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+papernick@PaperNick-S1:~/Adminer-Material-Theme (master)$ git show HEAD~1..HEAD --stat
+commit 7f5aa790e8c9894d23adc1fcc1e662d8c2308f1c
+Date:   Mon Oct 1 23:17:44 2018 +0300
+
+    Wipe checkpoint
+
+ Gruntfile.js | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+papernick@PaperNick-S1:~/Adminer-Material-Theme (master)$ echo 'Whew, everything is here'
+Whew, everything is here
+```

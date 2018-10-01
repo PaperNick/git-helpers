@@ -1,0 +1,11 @@
+#!/bin/bash
+
+if [ "$(git status)" = "" ]; then
+    echo "There were not any modified files. Nothing has been wiped."
+    exit 0
+fi
+
+git add --all &&
+git commit -qm "Wipe checkpoint" --no-verify &&
+echo "Wiped content commit hash was: $(git rev-parse --short HEAD)" &&
+git reset --hard HEAD~1

@@ -1,0 +1,87 @@
+#!/bin/bash
+
+
+HELP_TEXT=$(cat <<'EOF'
+Usage: git rb <branches> [-p | --push] [-o | --onto <base>]
+
+Rebase a list of branches onto a given branch.
+
+Positional arguments:
+  branches
+
+optional arguments:
+  -h, --help  Show this help message and exit
+  -p, --push  Push the branches after successful rebase upstream
+  -o, --onto  Specify onto which branch should the rebase happen
+              Default: master
+EOF
+)
+
+
+PARAMS=""
+while (( "$#" )); do
+  case "$1" in
+    -p|--push)
+      SHOULD_PUSH="1"
+      shift 1
+      ;;
+    -o|--onto)
+      REBASE_ONTO="$2"
+      if [ "$REBASE_ONTO" = "" ]; then
+        echo "Please specify which branch you want to rebase onto."
+        exit 1
+      fi
+      shift 2
+      ;;
+    -h)
+      echo "$HELP_TEXT"
+      exit 0
+      ;;
+    --) # End argument parsing
+      shift
+      break
+      ;;
+    -*|--*=) # Unsupported flags
+      echo "Error: Unsupported flag $1" >&2
+      exit 1
+      ;;
+    *) # Preserve positional arguments
+      PARAMS="$PARAMS $1"
+      shift
+      ;;
+  esac
+done
+
+# Set positional arguments in their proper place
+eval set -- "$PARAMS"
+
+
+BRANCHES=($@)
+REBASE_ONTO="${REBASE_ONTO:-master}"
+
+
+if [ "$(git status --untracked-file=no)" != "" ]; then
+  echo "The working tree is not clean."
+  exit 1
+fi
+
+
+function refresh_master () {
+  echo "Refreshing \"$REBASE_ONTO\" before rebase."
+  git checkout "$REBASE_ONTO" || exit 1
+  git pull || exit 1
+}
+
+function rebase_branches () {
+  for branch in "${BRANCHES[@]}"; do
+    git checkout "$branch" || exit 1
+    git rebase "$REBASE_ONTO" || exit 1
+    if [ "$SHOULD_PUSH" != "" ]; then
+      git push -f || exit 1
+    fi
+  done
+}
+
+
+refresh_master
+rebase_branches

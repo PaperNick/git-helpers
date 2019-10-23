@@ -132,3 +132,69 @@ Date:   Mon Oct 1 23:17:44 2018 +0300
 papernick@PaperNick-S1:~/Adminer-Material-Theme (master)$ echo 'Whew, everything is here'
 Whew, everything is here
 ```
+
+### Rebase multiple branches simultaneously
+
+#### The problem
+You've probably had to work on different tasks in different branches at the same time at some point. Those separate branches can quickly get outdated if your `master` branch is more active. And in order to keep them up-to-date, you need to synchronize them.
+
+Personally, I'm using `git rebase` to synchronize my feature branches in order to maintain a more linear history. If you've ever used rebase, you know that you need to do several operations in order to synchronize.
+
+1. You'd generally want to refresh your main branch first (`master` in my case)
+2. After switching to the main branch, you need to pull the upstream changes.
+3. Then you need to go back to the feature branch you want to update
+4. You need to initiate a rebase
+5. Finally, push the rebased branch upstream
+
+**Off topic note:** If you're more familiar with git, you probably already know that some of those steps can be condensed. `git pull` gives us the ability to specify the merge strategy and basically write:
+```
+git pull origin master --rebase
+```
+But I don't use this one-liner because it doesn't update my local copy of `master`. And if later I want to interactively rebase on `master`, I'd instinctively write `git rebase -i master` and then wonder what went wrong. Then I eventually remember that I didn't update my local copy of `master`. (Yes I know I can rebase on `origin/master`, but I'm lazy and this is longer. Plus, when creating new branches I need to explicitly create them from `origin/master`).
+
+**End off topic note**
+
+So if you need to go through those steps a couple of times to update several branches, it can get annoying.
+
+#### The solution
+And that's how `git rb` was born. This command basically gives you the ability to rebase a given list of branches onto a given branch in one shot.
+
+**Example usage:**
+
+```
+git rb feature/home fix/buggy-page docs/update-api
+```
+
+You can specify the `push` flag at the end to **forcefully** update the upstream branches: `-p` or `--push`.
+You can also specify which branch you want to rebase onto (the default is `master`).
+
+For a more detailed usage type:
+```
+git rb -h
+```
+
+
+**Cool, but I don't want to type out the full name of the branches every time.**
+
+Fear not, and let **bash autocomplete** handle the heavy lifting.
+
+To enable autocomplete of branches for `git rb`:
+1. Create a file named `git-rb` in `/etc/bash_completion.d`
+
+    ```
+    sudo touch /etc/bash_completion.d/git-rb
+    ```
+
+2. Enter the following content
+
+    ```
+    source /usr/share/bash-completion/completions/git
+
+    function _git_rb () {
+        _git_checkout
+    }
+    ```
+
+    **Note:** If you're using a different shell (like `zsh`), make sure to `source` the correct path.
+    You can always download the git completion scripts from here if you cannot find them in your distribution:
+    https://github.com/git/git/tree/master/contrib/completion

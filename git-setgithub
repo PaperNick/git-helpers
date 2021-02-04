@@ -1,0 +1,4 @@
+#!/bin/bash
+
+git config user.name PaperNick
+git config user.email "PaperNick@users.noreply.github.com"
